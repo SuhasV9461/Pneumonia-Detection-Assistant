@@ -1,0 +1,31 @@
+LLM EVALUATION on TEST findings - gpt-neo-1.3B_20261101-0754 - model EleutherAI/gpt-neo-1.3B
+records 150 (pneumonia, possible location 750, pneumonia, boxes 952, no pneumonia 1852, pneumonia, no region 99, borderline 350 available)
+
+================================================================================
+1. REPORTS
+================================================================================
+group                               n  faithful  hallucination  omission
+borderline                         30     1.000          0.000     0.000
+no pneumonia                       30     1.000          0.000     0.000
+pneumonia, boxes                   30     1.000          0.000     0.000
+pneumonia, no region               30     1.000          0.000     0.000
+pneumonia, possible location       30     1.000          0.000     0.000
+ALL                               150     1.000          0.000     0.000
+problem types: none
+
+================================================================================
+2. QUESTIONS
+================================================================================
+question kind           n   correct
+bilateral              50     1.000
+confidence             53     1.000
+diagnosis              54     1.000
+extent                 27     1.000
+next                   41     1.000
+result                 63     1.000
+scope                  56     1.000
+view                   56     1.000
+where                  50     1.000
+ALL                   450     1.000
+
+Examples with problems (first 5):

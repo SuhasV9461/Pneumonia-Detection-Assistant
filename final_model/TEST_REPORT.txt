@@ -1,0 +1,49 @@
+FINAL MODEL: 2 member model(s), TTA on, policy neutral, threshold(s) {'overall': 0.5818149467003509}
+Evaluated 2026-10-27T15:44:10
+==========================================================================================
+A. TEST SET (Normal vs Pneumonia)
+==========================================================================================
+images 2230 (pneumonia 902, normal 1328)
+confusion matrix: TP 818  FN 84  FP 19  TN 1309
+  accuracy             0.954   (95 % CI 0.944 - 0.962)
+  sensitivity          0.907   (95 % CI 0.887 - 0.926)
+  specificity          0.986   (95 % CI 0.980 - 0.992)
+  ppv                  0.977   (95 % CI 0.967 - 0.987)
+  npv                  0.940   (95 % CI 0.926 - 0.952)
+  f1                   0.941   (95 % CI 0.928 - 0.952)
+  auroc                0.990   (95 % CI 0.986 - 0.993)
+  within_view_auroc    0.984   (95 % CI 0.978 - 0.990)
+  AP                   sensitivity 0.929  specificity 0.972  AUROC 0.989
+  PA                   sensitivity 0.832  specificity 0.989  AUROC 0.980
+  calibration ECE      0.012
+
+Confidence bands on the test set:
+  very_unlikely    1183 images   really pneumonia 1 %
+  unlikely          139 images   really pneumonia 20 %
+  uncertain          85 images   really pneumonia 58 %
+  likely             58 images   really pneumonia 83 %
+  very_likely       765 images   really pneumonia 99 %
+
+==========================================================================================
+B. TEST SET WITHOUT LIKELY TWINS (261 removed)
+==========================================================================================
+images 1969 (pneumonia 870, normal 1099)
+confusion matrix: TP 790  FN 80  FP 18  TN 1081
+  accuracy             0.950   (95 % CI 0.941 - 0.960)
+  sensitivity          0.908   (95 % CI 0.889 - 0.927)
+  specificity          0.984   (95 % CI 0.975 - 0.991)
+  ppv                  0.978   (95 % CI 0.967 - 0.987)
+  npv                  0.931   (95 % CI 0.916 - 0.945)
+  f1                   0.942   (95 % CI 0.930 - 0.953)
+  auroc                0.989   (95 % CI 0.985 - 0.993)
+  within_view_auroc    0.984   (95 % CI 0.977 - 0.989)
+  AP                   sensitivity 0.927  specificity 0.975  AUROC 0.988
+  PA                   sensitivity 0.841  specificity 0.986  AUROC 0.979
+  calibration ECE      0.011
+  change vs A: accuracy -0.004, AUROC -0.0009
+
+==========================================================================================
+C. STRESS TEST: Not-Normal X-rays (abnormal, but not pneumonia; never seen in training)
+==========================================================================================
+  flagged as pneumonia: 1058 of 1773 (59.7 %)
+  AUROC pneumonia vs Not-Normal: 0.769  (vs Normal: 0.990)

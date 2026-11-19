@@ -1,0 +1,38 @@
+====================================================================================================
+1. CALIBRATION METHODS, 5-fold cross-validated on the validation set (lower is better)
+====================================================================================================
+method       params  log-loss     ECE  ECE AP  ECE PA  mean p AP  mean p PA
+none              0    0.1704  0.0243  0.0369  0.0284      0.719      0.186
+temperature       1    0.1564  0.0226  0.0239  0.0515      0.723      0.209
+platt             2    0.1493  0.0149  0.0404  0.0310      0.701      0.187
+platt_view        4    0.1343  0.0082  0.0077  0.0097      0.740      0.158
+(truth)                                                    0.740      0.158
+Chosen: platt_view
+
+Fitted parameters (probability = sigmoid(a * logit + b)):
+  overall  a = 0.6159   b = -0.6361
+  AP       a = 0.5321   b = +0.3135
+  PA       a = 0.6192   b = -1.4109
+
+====================================================================================================
+2. DECISION POLICIES, each set to catch 90 % of all pneumonia cases
+====================================================================================================
+policy                      thresholds  AP sens  AP spec  PA sens  PA spec   spec  missed  false+
+per_view           AP 0.837 / PA 0.135    0.901    0.980    0.901    0.953  0.958      89      56
+neutral             0.582 (view-blind)    0.920    0.967    0.833    0.982  0.979      90      28
+single                           0.649    0.937    0.943    0.773    0.990  0.981      90      25
+per_view: same sensitivity in AP and PA | neutral: one cut on the view-blind score |
+single: one cut on the view-honest probability (penalises PA - shown for comparison)
+Chosen policy: neutral
+
+====================================================================================================
+3. CONFIDENCE BANDS (fixed cut-offs, the same in every view)
+====================================================================================================
+band                    range  images  really pneumonia      AP      PA
+very_unlikely       0.00-0.10    1158                2%      5%      2%
+unlikely            0.10-0.30     152               16%     16%     17%
+uncertain           0.30-0.70      99               53%     50%     57%
+likely              0.70-0.90      55               80%     85%     67%
+very_likely         0.90-1.00     765               99%     99%     98%
+
+Chosen setup: sensitivity 0.900 (95 % CI 0.881-0.919), specificity 0.979 (0.970-0.986), accuracy 0.947
