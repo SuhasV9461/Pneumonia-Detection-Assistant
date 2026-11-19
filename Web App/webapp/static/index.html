@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pneumonia X-ray Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="5"/><path d="M16 7v18M10 11c-3 2-3 9 0 12M22 11c3 2 3 9 0 12"/></svg>
+    <h1>Pneumonia X-ray Assistant</h1>
+  </div>
+  <p class="caveat">Research prototype. Not a diagnosis: a clinician must review every X-ray.</p>
+</header>
+
+<main class="room">
+  <!-- left: the viewer -->
+  <section class="viewer" aria-label="X-ray viewer">
+    <div id="stage" class="stage empty">
+      <label id="drop" class="drop" for="file">
+        <span class="drop-title">Drop a chest X-ray here</span>
+        <span class="drop-sub">DICOM, PNG or JPG. Age, sex and view are read from DICOM files.</span>
+        <span class="btn ghost">Choose a file</span>
+      </label>
+      <canvas id="canvas" width="512" height="512" hidden aria-label="Chest X-ray with marked regions"></canvas>
+      <div id="busy" class="busy" hidden><div class="pulse"></div><p id="busy-text">Analysing the X-ray</p></div>
+    </div>
+    <div class="layers" id="layers" hidden>
+      <label class="toggle"><input type="checkbox" id="show-boxes" checked> Marked regions</label>
+      <label class="toggle"><input type="checkbox" id="show-heat"> Classifier heat-map</label>
+      <span class="legend"><i class="solid"></i>clearly marked <i class="dashed"></i>approximate</span>
+    </div>
+
+    <form id="form" class="controls">
+      <input type="file" id="file" name="file" accept=".dcm,.dicom,.png,.jpg,.jpeg,application/dicom,image/png,image/jpeg" hidden>
+      <div class="field"><label for="age">Age</label><input id="age" name="age" type="number" min="0" max="120" inputmode="numeric" placeholder="years"></div>
+      <div class="field"><label for="sex">Sex</label>
+        <select id="sex" name="sex"><option value="">Not given</option><option value="F">Female</option><option value="M">Male</option></select></div>
+      <div class="field"><label for="view">View</label>
+        <select id="view" name="view"><option value="">From file / unknown</option><option value="PA">PA</option><option value="AP">AP</option></select></div>
+      <button type="submit" id="go" class="btn primary" disabled>Analyse X-ray</button>
+      <p id="file-name" class="file-name">No file chosen</p>
+    </form>
+  </section>
+
+  <!-- right: the report sheet -->
+  <section class="sheet" aria-live="polite">
+    <div id="intro" class="intro">
+      <h2>Upload an X-ray to start</h2>
+      <p>The assistant answers three questions about one chest X-ray and writes them up as a short report:</p>
+      <ul class="steps">
+        <li><b>Is there pneumonia?</b> Two DenseNet121 classifiers decide, with a calibrated probability.</li>
+        <li><b>Where?</b> A YOLO detector marks the region; the result names the lung and zone.</li>
+        <li><b>What does it mean?</b> A fine-tuned GPT-Neo writes the report and answers your questions, using only these findings.</li>
+      </ul>
+      <p class="fine">Trained and tested on the RSNA Pneumonia Detection dataset (test set: accuracy 0.954, sensitivity 0.907, specificity 0.986). Other lung abnormalities are often flagged as well; the model does not tell them apart from pneumonia.</p>
+    </div>
+
+    <div id="result" hidden>
+      <div class="verdict" id="verdict">
+        <p class="who" id="who"></p>
+        <h2 id="headline"></h2>
+        <div class="ruler" aria-hidden="true">
+          <div class="bands"><span>very unlikely</span><span>unlikely</span><span>uncertain</span><span>likely</span><span>very likely</span></div>
+          <div class="track"><i style="left:10%"></i><i style="left:30%"></i><i style="left:70%"></i><i style="left:90%"></i><b id="marker"></b></div>
+        </div>
+        <p class="prob" id="prob"></p>
+      </div>
+
+      <h3>Findings</h3>
+      <table class="findings" id="findings">
+        <thead><tr><th scope="col">Region</th><th scope="col">Lung</th><th scope="col">Zone</th><th scope="col">Size</th><th scope="col">Marking</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p id="no-findings" class="muted" hidden></p>
+      <ul id="notes" class="notes"></ul>
+
+      <h3>Report</h3>
+      <p id="report" class="report"></p>
+      <p id="source" class="muted small"></p>
+      <div class="actions">
+        <a id="pdf" class="btn primary" href="#" download>Download report (PDF)</a>
+        <button id="again" class="btn ghost" type="button">Analyse another X-ray</button>
+      </div>
+
+      <h3>Ask about this X-ray</h3>
+      <div id="chat" class="chat" aria-live="polite"></div>
+      <div class="chips" id="chips">
+        <button type="button">Which lung is affected?</button>
+        <button type="button">How sure is the model?</button>
+        <button type="button">What should I do next?</button>
+      </div>
+      <form id="ask" class="ask">
+        <label for="q" class="sr">Your question</label>
+        <input id="q" autocomplete="off" maxlength="300" placeholder="For example: is it in both lungs?">
+        <button class="btn primary" type="submit">Ask</button>
+      </form>
+    </div>
+    <p id="error" class="error" role="alert" hidden></p>
+  </section>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>
